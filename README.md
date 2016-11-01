@@ -1,10 +1,10 @@
-# drone-inspy
-Parses and imports InSpy JSON output into a lair project
+# drone-recon_contacts
+Parses and imports JSON output from recon-ng module optiv/export_contacts into a LAIR project
 
 ## Installation
 -----
 
-This library is dependent on [pylair](https://github.com/lair-framework/pylair). After installing pylair, download the latest release [here](https://github.com/lair-framework/drone-inspy/releases/latest).
+This library is dependent on [pylair](https://github.com/lair-framework/pylair). After installing pylair, download the latest release [here](https://github.com/lair-framework/drone-recon_contacts/releases/latest).
 
 ```
 $ sudo pip install drone-recon_contacts*.tar.gz
