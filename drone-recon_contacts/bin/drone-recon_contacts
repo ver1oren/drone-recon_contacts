@@ -1,0 +1,67 @@
+#!/usr/bin/env python2
+#Author: Vincent Faires
+
+import os, sys, json, requests, urlparse, argparse, HTMLParser
+from pylair import models
+from pylair import client
+
+parser = argparse.ArgumentParser(description='drone-recon_contacts - Import recon_export JSON output into the Lair framework', version="1.0.0")
+parser.add_argument('id', help="Lair Project ID")
+parser.add_argument('json_file', help="Recon JSON output file")
+parser.add_argument('-k', help="Allow insecure SSL connections", action='store_true')
+
+def toAscii(data):
+    if isinstance(data, unicode):
+        return data.encode('utf8','replace')
+    return data
+
+if len(sys.argv) == 1:
+    parser.print_help()
+    sys.exit(1)
+
+args = parser.parse_args()
+hparser=HTMLParser.HTMLParser()
+requests.packages.urllib3.disable_warnings()
+
+try:
+    lair_url = os.environ['LAIR_API_SERVER']
+
+    u = urlparse.urlparse(lair_url)
+    if u.username and u.password:
+        project_id = args.id
+        project = dict(models.project)
+        project['id'] = project_id
+        project['commands'] = [{'command': 'recon-ng', 'tool': 'recon-ng'}]
+        project['tool'] = 'drone-recon_contacts'
+
+        opts = client.Options(u.username, u.password, "{}:{}".format(u.hostname, u.port), project_id, scheme=u.scheme, insecure_skip_verify=args.k)
+
+        with open(args.json_file) as f:
+            data = json.load(f)
+            #data = json.loads(json.dumps(f))
+
+        for employee in data:
+            print employee
+            person = dict(models.person)
+            person['projectId'] = project_id
+            person['principalName'] = '{0} {1}'.format(toAscii(employee['firstName']),
+	                                               toAscii(employee['lastName']))
+            person['firstName'] = employee['firstName']
+            person['lastName'] = employee['lastName']
+            person['department'] = employee['title']
+            person['emails'] = []
+            person['emails'].append(employee['email'])
+
+            project['people'].append(person)
+
+        res = client.import_project(project, opts)
+        if res['status'] != 'Ok':
+            print "[!] {}: {}".format(res['status'], res['message'])
+        else: print "[*] Success: Operation completed successfully"
+    else:
+        print "[!] Error: Missing username and/or password"
+
+except IOError as e:
+    print "[!] Error: IOError opening JSON file: {}".format(e)
+except KeyError as e:
+    print "[!] Missing LAIR_API_SERVER environment variable. {}".format(e)
