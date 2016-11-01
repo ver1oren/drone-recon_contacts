@@ -5,7 +5,7 @@ import os, sys, json, requests, urlparse, argparse, HTMLParser
 from pylair import models
 from pylair import client
 
-parser = argparse.ArgumentParser(description='drone-recon_contacts - Import recon_export JSON output into the Lair framework', version="1.0.0")
+parser = argparse.ArgumentParser(description='drone-recon_contacts - Import JSON output from recon-ng module optiv/export_contacts into the Lair framework', version="1.0.0")
 parser.add_argument('id', help="Lair Project ID")
 parser.add_argument('json_file', help="Recon JSON output file")
 parser.add_argument('-k', help="Allow insecure SSL connections", action='store_true')
