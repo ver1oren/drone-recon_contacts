@@ -15,7 +15,7 @@ $ drone-recon_contacts -h
 -----
 
 ```
-drone-recon_contacts - Import recon_export JSON output into the Lair framework
+drone-recon_contacts - Import JSON output from recon-ng module optiv/export_contacts into the Lair framework
 
 positional arguments:
   id             Lair Project ID
